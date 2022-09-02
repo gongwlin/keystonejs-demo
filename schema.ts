@@ -54,7 +54,7 @@ export const lists: Lists = {
 
     ui: {
       listView: {
-        initialColumns: ['content'],
+        initialColumns: ['content', 'status'],
       },
     },
   }),

@@ -6,8 +6,6 @@ import { useState, useEffect } from 'react'
 import { useToasts } from '@keystone-ui/toast'
 import { Tree, Input, Button, Modal, Form, message } from 'antd'
 
-const { Search } = Input
-
 const loop = (data: any, key: string | number, callback: any) => {
   data.forEach((item: any, index: number, arr: any) => {
     if (item.key === key) {

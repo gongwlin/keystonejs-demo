@@ -1,7 +1,10 @@
 import React from 'react';
-import { FieldContainer, FieldLabel, TextInput } from '@keystone-ui/fields';
+import { FieldContainer, FieldDescription, FieldLabel, TextInput } from '@keystone-ui/fields';
+import { CellLink, CellContainer } from '@keystone-6/core/admin-ui/components';
 
 import {
+  CardValueComponent,
+  CellComponent,
   FieldController,
   FieldControllerConfig,
   FieldProps,
@@ -15,6 +18,26 @@ export const Field = ({ field, value, onChange, autoFocus }: FieldProps<typeof c
     <TreeSelect maxStars={field.maxStars} onChange={onChange} value={value} autoFocus={autoFocus} queryPath={field.queryPath} field={field} />
   </FieldContainer>
 );
+
+// this is shown on the list view in the table
+export const Cell: CellComponent = ({ item, field, linkTo }) => {
+  let value = item[field.path] + '';
+  return linkTo ? <CellLink {...linkTo}>{value}</CellLink> : <CellContainer>{value}</CellContainer>;
+};
+// setting supportsLinksTo means the cell component allows containing a link to the item
+// for example, text fields support it but relationship fields don't because
+// their cell component links to the related item so it can't link to the item that the relationship is on
+Cell.supportsLinkTo = true;
+
+// this is shown on the item page in relationship fields with `displayMode: 'cards'`
+export const CardValue: CardValueComponent = ({ item, field }) => {
+  return (
+    <FieldContainer>
+      <FieldLabel>{field.label}</FieldLabel>
+      {item[field.path]}
+    </FieldContainer>
+  );
+};
 
 export const controller = (
   // the type parameter here needs to align with what is returned from `getAdminMeta`
@@ -40,6 +63,7 @@ export const controller = (
       Filter(props) {
         return (
           <TextInput
+            // type="number"
             type="text"
             onChange={event => {
               props.onChange(event.target.value);
@@ -68,6 +92,40 @@ export const controller = (
             .join(', ');
         }
         return `${label.toLowerCase()}: ${renderedValue}`;
+      },
+      types: {
+        is: {
+          label: 'Is exactly',
+          initialValue: '',
+        },
+        not: {
+          label: 'Is not exactly',
+          initialValue: '',
+        },
+        gt: {
+          label: 'Is greater than',
+          initialValue: '',
+        },
+        lt: {
+          label: 'Is less than',
+          initialValue: '',
+        },
+        gte: {
+          label: 'Is greater than or equal to',
+          initialValue: '',
+        },
+        lte: {
+          label: 'Is less than or equal to',
+          initialValue: '',
+        },
+        in: {
+          label: 'Is one of',
+          initialValue: '',
+        },
+        not_in: {
+          label: 'Is not one of',
+          initialValue: '',
+        },
       },
     },
   };
