@@ -12,6 +12,12 @@ generator client {
   output   = "node_modules/.prisma/client"
 }
 
+model TODO {
+  id      String  @id @default(cuid())
+  content String  @default("")
+  status  Boolean @default(false)
+}
+
 model User {
   id       String @id @default(cuid())
   name     String @default("")
@@ -37,4 +43,20 @@ model Tag {
   id    String @id @default(cuid())
   name  String @default("")
   posts Post[] @relation("Post_tags")
+}
+
+model MumuDirectory {
+  id      String  @id @default(cuid())
+  name    String  @default("")
+  content String? @default("[]")
+}
+
+model mumu {
+  id          String    @id @default(cuid())
+  title       String    @default("")
+  content     String    @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  directory   String
+  brief       String    @default("")
+  status      String?   @default("draft")
+  publishDate DateTime? @default(now())
 }

@@ -26,7 +26,6 @@ import {
   timestamp,
   select,
   checkbox,
-  calendarDay,
   json
 } from '@keystone-6/core/fields';
 // The document field is a more complicated field, so it's in its own package
@@ -51,7 +50,6 @@ export const lists: Lists = {
     fields: {
       content: text({ validation: { isRequired: true } }),
       status: checkbox({ defaultValue: false }),
-      date: calendarDay()
     },
 
     ui: {
