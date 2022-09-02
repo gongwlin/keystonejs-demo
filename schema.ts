@@ -25,6 +25,9 @@ import {
   password,
   timestamp,
   select,
+  checkbox,
+  calendarDay,
+  json
 } from '@keystone-6/core/fields';
 // The document field is a more complicated field, so it's in its own package
 // Keystone aims to have all the base field types, but you can make your own
@@ -36,11 +39,27 @@ import { document } from '@keystone-6/fields-document';
 // our types to a stricter subset that is type-aware of other lists in our schema
 // that Typescript cannot easily infer.
 import { Lists } from '.keystone/types';
+import { contentField,  statusField, } from './fields'
+import { TreeSelect } from './customFields/TreeSelect';
 
 // We have a users list, a blogs list, and tags for blog posts, so they can be filtered.
 // Each property on the exported object will become the name of a list (a.k.a. the `listKey`),
 // with the value being the definition of the list, including the fields.
 export const lists: Lists = {
+
+  TODO: list({
+    fields: {
+      content: text({ validation: { isRequired: true } }),
+      status: checkbox({ defaultValue: false }),
+      date: calendarDay()
+    },
+
+    ui: {
+      listView: {
+        initialColumns: ['content'],
+      },
+    },
+  }),
   // Here we define the user list.
   User: list({
     // Here are the fields that `User` will have. We want an email and password so they can log in
@@ -137,6 +156,65 @@ export const lists: Lists = {
     fields: {
       name: text(),
       posts: relationship({ ref: 'Post.tags', many: true }),
+    },
+  }),
+
+  // 存储目录名
+  MumuDirectory: list({
+    hooks: {
+  
+    },
+    fields: {
+      name: text({
+        hooks: {
+        },
+      }),
+      content: json({
+        defaultValue: [],
+        ui: {
+          views: require.resolve('./TreeView.tsx'),
+        },
+      }),
+
+    },
+    ui: {
+      description: '请确保目录树只有一个, 多个时将默认使用第一条数据！！！',
+      label: '目录管理',
+
+      isHidden: false,
+      listView: {
+        initialColumns: ['name'],
+        initialSort: { field: 'name', direction: 'DESC' },
+      },
+    },
+  }),
+
+  /** mumu */
+  mumu: list({
+    fields: {
+      title: text({ isFilterable: true, validation: { isRequired: true } }),
+      content: contentField,
+      directory: TreeSelect({
+        maxStars: 6,
+        queryPath: 'mumuDirectories',
+        createPath: 'mumu-directories',
+        ui: {
+          description: '请选择文章所在的目录',
+        },
+      }),
+      brief: text({ ui: { displayMode: 'textarea' } }),
+      status: statusField,
+      publishDate: timestamp({ defaultValue: { kind: 'now' } }),
+      
+    },
+    ui: {
+      label: '文章',
+      path: 'mumu',
+
+      listView: {
+        initialColumns: ['title', 'status'],
+        initialSort: { field: 'title', direction: 'DESC' },
+      },
     },
   }),
 };
